@@ -32,4 +32,4 @@ fe.new_lbph_obj()
 
 histograms = fe.get_lbph_template(images, labels)
 
-print(histograms[0])
+fe.lbph_obj.save("/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml")

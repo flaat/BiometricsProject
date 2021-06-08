@@ -2,13 +2,25 @@ from sklearn.decomposition import PCA
 import cv2
 
 
-
 class Extractor:
 
     def __init__(self):
 
         self.pca_obj = None
         self.lbph_obj = None
+        self.lda_obj = None
+
+    def new_lda_obj(self):
+
+        self.lda_obj = cv2.face.FisherFaceRecognizer_create()
+
+    def get_lda_template(self, images, labels):
+
+        if self.lda_obj is None:
+            print("LDA OBJ NOT DEFINED")
+        else:
+            self.lda_obj.train(images, labels)
+            return self.lda_obj
 
     def new_lbph_obj(self):
 
