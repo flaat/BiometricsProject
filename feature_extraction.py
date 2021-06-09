@@ -1,5 +1,6 @@
 from sklearn.decomposition import PCA
 import cv2
+import filters.gabor as gb
 
 
 class Extractor:
@@ -9,6 +10,21 @@ class Extractor:
         self.pca_obj = None
         self.lbph_obj = None
         self.lda_obj = None
+        self.gabor_filters = None
+
+
+    def new_gabor_filters(self):
+
+        self.gabor_filters = gb.build_filters()
+
+
+    def get_gabor_features(self, images):
+
+        if self.gabor_filters is None:
+            print("GABOR FILTERS NOT DEFINED")
+        else:
+            return gb.process(images, self.gabor_filters)
+
 
     def new_lda_obj(self):
 
