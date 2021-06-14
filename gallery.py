@@ -2,7 +2,7 @@ import os
 from PIL import Image
 import numpy as np
 from tqdm import tqdm
-
+import cv2
 
 class Gallery:
     """
@@ -15,9 +15,6 @@ class Gallery:
 
         self.img_size = 250
         self.original_template = {}
-        self.pca_template = {}
-        self.lda_template = {}
-        self.lbph_template = {}
         self.coding_dict = {}
         self.decoding_dict = {}
 
@@ -28,11 +25,6 @@ class Gallery:
         else:
             return self.original_template[name]
 
-    def get_pca_template_by_name(self, name):
-        if name not in self.pca_template:
-            raise Exception("Name Not in the gallery")
-        else:
-            return self.pca_template[name]
 
     def get_all_original_template(self, mode="coded"):
         """
@@ -77,6 +69,10 @@ class Gallery:
         :return:
         """
 
+        path = "/home/flavio/PycharmProjects/BiometricsProject/model/haar_model/model"
+
+        face_cascade = cv2.CascadeClassifier(path)
+
         directories = [name for name in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, name))]
 
         coding_index = 0
@@ -97,9 +93,15 @@ class Gallery:
 
                 normal_image = normal_image.resize((self.img_size, self.img_size), Image.ANTIALIAS).convert("L")
 
-                np_image = np.array(normal_image)
+                np_image = np.asarray(normal_image)
 
-                images_list.append(np_image.flatten())
+                faces = face_cascade.detectMultiScale(np_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+                for (x, y, w, h) in faces:
+
+                    face_image = np_image[y:y + h, x:x + w]
+
+                images_list.append(np.asarray(Image.fromarray(face_image).resize((60, 60), Image.ANTIALIAS)))
 
                 self.original_template[key] = images_list
 

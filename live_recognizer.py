@@ -1,5 +1,9 @@
 import cv2
+import matplotlib.pyplot as plt
+
 from gallery import Gallery
+import utility as utl
+import numpy as np
 
 g = Gallery()
 
@@ -12,6 +16,14 @@ faceCascade = cv2.CascadeClassifier(path)
 video_capture = cv2.VideoCapture(0)
 
 model = cv2.face.LBPHFaceRecognizer_create()
+
+images = g.get_original_template_by_name("Flavio_Giorgi")
+
+utl.plot_gallery(images[0:12], [" "]*12, 60,60)
+
+plt.show()
+
+#model.train(images, np.asarray([12]*len(images)))
 
 model_path = "/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml"
 
@@ -33,7 +45,9 @@ while True:
 
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
+
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
         id, confidence = model.predict(gray[y:y + h, x:x + w])
 
         # If confidence is less them 100 ==> "0" : perfect match
@@ -46,7 +60,6 @@ while True:
 
 
         cv2.putText(frame, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
-        cv2.putText(frame, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
 
 
     # Display the resulting frame

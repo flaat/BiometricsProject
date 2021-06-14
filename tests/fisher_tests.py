@@ -1,5 +1,6 @@
 import cv2
 from gallery import Gallery
+from feature_extraction import Extractor
 
 # New gallery object
 g = Gallery()
@@ -8,11 +9,12 @@ g = Gallery()
 g.build_gallery("/home/flavio/Scrivania/dataset/lfw_funneled")
 
 images, labels = g.get_all_original_template()
+train_images = [img.flatten() for img in images]
 
-model = cv2.face.FisherFaceRecognizer_create()
+fe = Extractor()
 
-print("training the model...")
+fe.new_lda_obj()
+fe.get_lda_template(train_images, labels)
 
-model.train(images, labels)
 
 

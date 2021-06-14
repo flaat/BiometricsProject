@@ -1,4 +1,6 @@
 from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
 import cv2
 import filters.gabor as gb
 
@@ -28,19 +30,19 @@ class Extractor:
 
     def new_lda_obj(self):
 
-        self.lda_obj = cv2.face.FisherFaceRecognizer_create()
+        self.lda_obj = LDA()
 
     def get_lda_template(self, images, labels):
 
         if self.lda_obj is None:
             print("LDA OBJ NOT DEFINED")
         else:
-            self.lda_obj.train(images, labels)
-            return self.lda_obj
+            return self.lda_obj.fit_transform(images, labels)
 
     def new_lbph_obj(self):
 
         self.lbph_obj = cv2.face.LBPHFaceRecognizer_create()
+        print("Radius : "+str(self.lbph_obj.getRadius())+" Threshold : "+str(self.lbph_obj.getThreshold()))
 
     def get_lbph_template(self, images, labels):
 

@@ -24,12 +24,12 @@ images = []
 
 # We need to reshape the images because there where mono-dimensional arrays
 
-for img in train_images:
-
-    images.append(img.reshape(g.img_size, g.img_size))
+# for img in train_images:
+#
+#     images.append(img.reshape(g.img_size, g.img_size))
 
 fe.new_lbph_obj()
 
-histograms = fe.get_lbph_template(images, labels)
+histograms = fe.get_lbph_template(train_images, labels)
 
 fe.lbph_obj.save("/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml")

@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 
-def build_filters(kernel_size = 25):
+def build_filters(kernel_size = 5):
     filters = []
 
     # For different orientations
@@ -27,6 +27,5 @@ def process(img, filters):
 
         fimg = cv2.filter2D(img, -1, kern)
         responses.append(fimg)
-        # np.maximum(accum, fimg, accum)
 
     return responses
