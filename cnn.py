@@ -35,18 +35,15 @@ class ImageDataset(Dataset):
 
 
 class Cnn(nn.Module):
-    # (1, 60, 60)
     def __init__(self, num_classes):
         super(Cnn, self).__init__()
         self.conv_layers = nn.Sequential(
             # (1, 60, 60)
             self._conv_block(1, 64),
             nn.Dropout(0.3),
-            nn.MaxPool2d(2),
             # (64, 30, 30)
             self._conv_block(64, 128),
             nn.Dropout(0.3),
-            nn.MaxPool2d(2),
             # (128, 15, 15)
         )
         self.linear = nn.Linear(128 * 15 * 15, num_classes)
@@ -153,11 +150,13 @@ class PlModel(pl.LightningModule):
         val_loss = output["loss"]
         val_accuracy = self.val_accuracy(predictions, labels)
         self.log_dict(
-            {"val_loss": val_loss, "val_accuracy": val_accuracy}, prog_bar=True
+            {"val_loss": val_loss, "val_accuracy": val_accuracy},
+            prog_bar=True,
         )
 
 
 if __name__ == "__main__":
+    pl.seed_everything(42)
     train_path = "celeba/train_"
     val_path = "celeba/val_"
     num_classes = len(os.listdir(train_path))
@@ -166,7 +165,7 @@ if __name__ == "__main__":
         val_path=val_path,
         num_classes=num_classes,
         batch_size=32,
-        lr=0.002,
+        lr=0.0002,
         weight_decay=0.0,
     )
     model = PlModel(hparams)
@@ -182,7 +181,7 @@ if __name__ == "__main__":
     )
     early_stopping_callback = EarlyStopping(
         monitor="val_accuracy",
-        patience=5,
+        patience=10,
         mode="max",
     )
 
