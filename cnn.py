@@ -41,9 +41,11 @@ class Cnn(nn.Module):
             # (1, 60, 60)
             self._conv_block(1, 64),
             nn.Dropout(0.3),
+            nn.MaxPool2d(2),
             # (64, 30, 30)
             self._conv_block(64, 128),
             nn.Dropout(0.3),
+            nn.MaxPool2d(2),
             # (128, 15, 15)
         )
         self.linear = nn.Linear(128 * 15 * 15, num_classes)
@@ -75,12 +77,54 @@ class Cnn(nn.Module):
 
 
 class CnnGabor(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super(CnnGabor, self).__init__()
-        raise NotImplementedError()
+        gabor_filters = build_filters(3)
+        # fix gabor filters
+        self.conv_gabor = nn.Conv2d(
+            1, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)
+        )
+        self.conv_gabor.weight = nn.Parameter(torch.tensor(gabor_filters).unsqueeze(1))
 
-    def forward(self, x):
-        raise NotImplementedError()
+        self.conv_layers = nn.Sequential(
+            # (12, 60, 60)
+            self._conv_block(12, 64),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(2),
+            # (64, 30, 30)
+            self._conv_block(64, 128),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(2),
+            # (128, 15, 15)
+        )
+        self.linear = nn.Linear(128 * 15 * 15, num_classes)
+
+    def _conv_block(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size=3,
+        stride=1,
+        padding=1,
+    ):
+        return nn.Sequential(
+            nn.Conv2d(
+                in_channels,
+                out_channels,
+                kernel_size=(kernel_size, kernel_size),
+                stride=(stride, stride),
+                padding=(padding, padding),
+            ),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+        )
+
+    def forward(self, images):
+        with torch.no_grad():
+            out = self.conv_gabor(images)
+        out = self.conv_layers(out)
+        out = out.view(-1, 128 * 15 * 15)
+        return self.linear(out)
 
 
 class PlImageDataset(pl.LightningDataModule):
@@ -107,7 +151,8 @@ class PlModel(pl.LightningModule):
     def __init__(self, hparams):
         super(PlModel, self).__init__()
         self.save_hyperparameters(hparams)
-        self.model = Cnn(self.hparams["num_classes"])
+        CnnModel = CnnGabor if hparams["use_gabor"] else Cnn
+        self.model = CnnModel(self.hparams["num_classes"])
         self.criterion = nn.CrossEntropyLoss()
         self.train_accuracy = Accuracy(
             num_classes=self.hparams["num_classes"], average="macro"
@@ -167,6 +212,7 @@ if __name__ == "__main__":
         batch_size=32,
         lr=0.0002,
         weight_decay=0.0,
+        use_gabor=True,
     )
     model = PlModel(hparams)
     data_module = PlImageDataset(hparams)
