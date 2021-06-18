@@ -1,8 +1,7 @@
 import cv2
-import matplotlib.pyplot as plt
-
+from PIL import Image
+from feature_extraction import Extractor
 from gallery import Gallery
-import utility as utl
 import numpy as np
 
 g = Gallery()
@@ -15,21 +14,19 @@ faceCascade = cv2.CascadeClassifier(path)
 
 video_capture = cv2.VideoCapture(0)
 
-model = cv2.face.LBPHFaceRecognizer_create()
-
-images = g.get_original_template_by_name("Flavio_Giorgi")
-
-utl.plot_gallery(images[0:12], [" "]*12, 60,60)
-
-plt.show()
-
-#model.train(images, np.asarray([12]*len(images)))
-
-model_path = "/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml"
-
 font = cv2.FONT_HERSHEY_SIMPLEX
 
-model.read(model_path)
+raw_templates, coded_labels = g.get_all_original_template(mode="coded")
+
+# flattening the images
+
+flatted_templates = [template.flatten() for template in raw_templates]
+
+fe = Extractor()
+
+fe.new_lda_obj()
+
+fe.lda_obj.fit(flatted_templates, coded_labels)
 
 while True:
     # Capture frame-by-frame
@@ -40,7 +37,8 @@ while True:
         gray,
         scaleFactor=1.1,
         minNeighbors=5,
-        minSize=(30, 30)
+        minSize=(30, 30),
+
     )
 
     # Draw a rectangle around the faces
@@ -48,18 +46,14 @@ while True:
 
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-        id, confidence = model.predict(gray[y:y + h, x:x + w])
+        img = np.asarray(Image.fromarray(gray[y:y + h, x:x + w]).resize((60, 60), Image.ANTIALIAS))
+
+        id = fe.lda_obj.predict(img.reshape(1, -1))
 
         # If confidence is less them 100 ==> "0" : perfect match
-        if confidence < 100:
-            id = g.decoding_dict[id]
-            confidence = "  {0}%".format(round(100 - confidence))
-        else:
-            id = "unknown"
-            confidence = "  {0}%".format(round(100 - confidence))
+        id = g.decoding_dict[id[0]]
 
-
-        cv2.putText(frame, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
+        cv2.putText(frame, str(id), (x + 5, y - 5),font , 1, (255, 255, 255), 2)
 
 
     # Display the resulting frame
