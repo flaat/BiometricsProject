@@ -28,9 +28,9 @@ X_train, X_test, y_train, y_test = \
 
 clf = MLPClassifier(hidden_layer_sizes=(400, 200, 100, 50), random_state=1, max_iter=500).fit(X_train, y_train)
 
-#scores = cross_val_score(clf, np.append(X_train, X_test, axis=0),np.append(y_train,y_test), cv=10, scoring="f1_macro")
-
-#print("Mean f1: "+str(np.mean(scores)), "Std: "+str(np.std(scores)))
+# scores = cross_val_score(clf, np.append(X_train, X_test, axis=0),np.append(y_train,y_test), cv=10, scoring="f1_macro")
+#
+# print("Mean f1: "+str(np.mean(scores)), "Std: "+str(np.std(scores)))
 
 y_pred = clf.predict(X_test)
 
