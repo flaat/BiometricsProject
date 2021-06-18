@@ -31,5 +31,6 @@ images = []
 fe.new_lbph_obj()
 
 histograms = fe.get_lbph_template(train_images, labels)
-
-fe.lbph_obj.save("/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml")
+print(len(histograms[0][0]))
+utl.displayHistogram(histograms[0][0], "Tony_Blair")
+#fe.lbph_obj.save("/home/flavio/PycharmProjects/BiometricsProject/model/lbph_model/model.yml")

@@ -53,14 +53,13 @@ def load_data(path):
     return g, fe, images, labels, features
 
 
-g, fe, images, labels, features = load_data("lfw_funneled")
+g, fe, images, labels, features = load_data("/home/flavio/Scrivania/dataset/lfw_funneled")
 
 
 pages = {
     "Home": run_home,
     "Dataset visualization": run_dataset,
     "Feature extraction": run_feature_extraction,
-    "Classification": run_classification,
     "Live feed": run_livefeed,
 }
 

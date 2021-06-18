@@ -14,7 +14,5 @@ def run_home(g: Gallery, fe: Extractor, images, labels, features):
     st.write(
         "Use this module to visually check the extracted features from the algorithms used."
     )
-    st.write("## Classification")
-    st.write("Use this module to test the models on the idenfitication task.")
     st.write("## Live feed")
     st.write("Use this module use one classifier in real time, using the webcam.")

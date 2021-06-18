@@ -14,7 +14,9 @@ train_images = [img.flatten() for img in images]
 fe = Extractor()
 
 fe.new_lda_obj()
-fe.get_lda_template(train_images, labels)
+template = fe.get_lda_template(train_images, labels)
+
+print(template[0])
 
 
 
