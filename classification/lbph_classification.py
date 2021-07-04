@@ -30,48 +30,68 @@ target_names = [v for _, v in g.decoding_dict.items()]
 
 raw_templates, coded_labels = g.get_all_original_template(mode="coded")
 
-scores = []
-for i in range(0, 10):
+# scores = []
+# for i in range(0, 10):
+#
+#     X_train, X_test, y_train, y_test = \
+#         train_test_split(raw_templates, coded_labels, test_size=0.25)
+#
+#
+#     fe = Extractor()
+#
+#     fe.new_lbph_obj()
+#
+#     fe.get_lbph_template(X_train, y_train)
+#
+#     y_pred = []
+#
+#     for img in X_test:
+#
+#         id, _ = fe.lbph_obj.predict(img)
+#
+#         y_pred.append(id)
+#
+#     scores.append(f1_score(y_test, y_pred, average='macro'))
+#
+# print("Mean f1: "+str(np.mean(scores)), "Std: "+str(np.std(scores)))
+#
+# X_train, X_test, y_train, y_test = \
+#     train_test_split(raw_templates, coded_labels, test_size=0.25)
+#
+# y_pred = []
+#
+# for img in X_test:
+#
+#     id, _ = fe.lbph_obj.predict(img)
+#
+#     y_pred.append(id)
 
-    X_train, X_test, y_train, y_test = \
-        train_test_split(raw_templates, coded_labels, test_size=0.25)
+# print(classification_report(y_test, y_pred, target_names=target_names))
+#
+# cnf_mtx = confusion_matrix(y_pred, y_test)
+#
+# sns.heatmap(cnf_mtx, annot=True)
+#
+# plt.title("Confusions matrix for LBPH")
+#
+# plt.show()
 
+fe = Extractor()
 
-    fe = Extractor()
+fe.new_lbph_obj()
 
-    fe.new_lbph_obj()
-
-    fe.get_lbph_template(X_train, y_train)
-
-    y_pred = []
-
-    for img in X_test:
-
-        id, _ = fe.lbph_obj.predict(img)
-
-        y_pred.append(id)
-
-    scores.append(f1_score(y_test, y_pred, average='macro'))
-
-print("Mean f1: "+str(np.mean(scores)), "Std: "+str(np.std(scores)))
+X_lda = fe.get_lbph_template(raw_templates, coded_labels)
 
 X_train, X_test, y_train, y_test = \
-    train_test_split(raw_templates, coded_labels, test_size=0.25)
+    train_test_split(np.array(X_lda).squeeze(), coded_labels, test_size=0.25)
 
-y_pred = []
+clf = SVC(kernel='rbf', class_weight='balanced', probability=True)
+print(X_train[0])
 
-for img in X_test:
-    
-    id, _ = fe.lbph_obj.predict(img)
 
-    y_pred.append(id)
+clf.fit(X_train, y_train)
 
-print(classification_report(y_test, y_pred, target_names=target_names))
 
-cnf_mtx = confusion_matrix(y_pred, y_test)
+y_pred_proba = clf.predict_proba(X_test)
 
-sns.heatmap(cnf_mtx, annot=True)
-
-plt.title("Confusions matrix for LBPH")
-
-plt.show()
+utl.cumulative_match_curve(y_pred_proba, y_test, "Cumulative Match Characteristic curve LBP-SVM")

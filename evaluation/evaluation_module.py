@@ -36,15 +36,15 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 
-# fe.new_pca_obj(train_set=X_train, n_components=150)
+fe.new_pca_obj(train_set=X_train, n_components=150)
 #
 # # Now we have inside the fe object the PCA obj through we can perform dimensionality reduction
 # # we can obtain dimensionality reduction for the entire gallery using the code below
 #
 print("Computing PCA GALLERY")
 
-# probes = fe.pca_obj.transform(X_test)
-#templates = fe.pca_obj.transform(X_train)
+#probes = fe.pca_obj.transform(X_test)
+template = fe.pca_obj.transform(flatted_images)
 
 #train_images = fe.pca_obj.transform(flatted_images)
 
@@ -64,8 +64,8 @@ print("Computing PCA GALLERY")
 # # Get the histograms
 # print(len(train_images), len(train_images[0]))
 # histogram = fe.get_lbph_template(train_images, labels)
-fe.new_lda_obj()
-template = fe.get_lda_template(flatted_images, labels)
+#fe.new_lda_obj()
+#template = fe.get_lda_template(flatted_images, labels)
 
 # param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
 #               'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
@@ -118,7 +118,7 @@ def distance_matrix(template):
 
     results = {}
 
-    t_range = np.linspace(2, 20, 100)
+    t_range = np.linspace(6, 30, 100)
 
     for t in tqdm(t_range):
         res = [0, 0, 0, 0]
@@ -150,10 +150,10 @@ def distance_matrix(template):
     print("GAR: ", GAR)
     print("FRR: ", FRR)
     print("FAR: ", FAR)
-    plt.plot(FAR, GAR, marker='o')
-    plt.xlabel("FAR")
-    plt.ylabel("GAR")
-    plt.title("ROC for LDA")
+    plt.plot( t_range, FAR, t_range, FRR, marker='o')
+    # plt.xlabel("FAR")
+    # plt.ylabel("FRR")
+    plt.title("ERR for PCA")
     plt.show()
 
     #print("GENUINE ACCEPTANCE: "+str(res[0])+"\nFALSE ACCEPTANCE: "+str(res[1])+"\nFALSE REJECTION: "+str(res[2])+"\nGENUINE REJECTION: "+str(res[3]))

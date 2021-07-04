@@ -7,7 +7,6 @@ from pages.home import run_home
 from pages.livefeed import run_livefeed
 from pages.features import run_feature_extraction
 from pages.dataset import run_dataset
-from pages.classification import run_classification
 
 
 def get_pca_templates(g: Gallery, fe: Extractor, images, features):

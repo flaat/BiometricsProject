@@ -26,7 +26,7 @@ flatted_templates = [template.flatten() for template in raw_templates]
 X_train, X_test, y_train, y_test = \
     train_test_split(flatted_templates, coded_labels, test_size=0.25)
 
-clf = MLPClassifier(hidden_layer_sizes=(400, 200, 100, 50), random_state=1, max_iter=500).fit(X_train, y_train)
+clf = MLPClassifier(hidden_layer_sizes=(1500, 750, 350), random_state=1, max_iter=500).fit(X_train, y_train)
 
 # scores = cross_val_score(clf, np.append(X_train, X_test, axis=0),np.append(y_train,y_test), cv=10, scoring="f1_macro")
 #
@@ -38,4 +38,4 @@ print(classification_report(y_test, y_pred, target_names=target_names))
 
 y_pred_proba = clf.predict_proba(X_test)
 
-utl.cumulative_match_curve(y_pred_proba, y_test, "Cumulative Match Characteristic curve MLP")
+utl.cumulative_match_curve(y_pred_proba, y_test, "Second - Cumulative Match Characteristic curve MLP")

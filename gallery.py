@@ -101,7 +101,7 @@ class Gallery:
 
                     face_image = np_image[y:y + h, x:x + w]
 
-                images_list.append(np.asarray(Image.fromarray(face_image).resize((20, 20), Image.ANTIALIAS)))
+                images_list.append(np.asarray(Image.fromarray(face_image).resize((60, 60), Image.ANTIALIAS)))
 
                 self.original_template[key] = images_list
 
